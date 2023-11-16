@@ -1,27 +1,12 @@
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
 import MySQLdb
+from . import services
 
 
 # Create your views here.
 def models_tv(request):
-    connect = MySQLdb.connect('localhost', 'root', 'admin', 'test3')
-    cursor = connect.cursor()
-    cursor.execute("SELECT tv_id, tv_model, price FROM tv;")
-    data_list = []
-    keys_list = []
-    for row in cursor.fetchall():
-        data_dict = {
-            "ID": row[0],
-            "Model": row[1],
-            "Price": row[2]
-        }
-        data_list.append(data_dict)
-        keys_list = data_dict.keys()
-    data = {
-        "data_list": data_list,
-        "keys_list": keys_list
-    }
-    connect.close()
+    data = services.get_models_tv()
     return render(request=request, template_name="app/models_tv.html", context=data)
 
 
@@ -30,36 +15,22 @@ def index(request):
 
 
 def shipments(request):
-    return render(request=request, template_name="app/shipments.html")
+    data = services.get_shipments()
+    return render(request=request, template_name="app/shipments.html", context=data)
 
 
 def supply(request):
-    return render(request=request, template_name="app/supply.html")
+    data = services.get_supplies()
+    return render(request=request, template_name="app/supply.html", context=data)
 
 
 def stocks(request):
-    connect = MySQLdb.connect('localhost', 'root', 'admin', 'test3')
-    cursor = connect.cursor()
-    cursor.execute("""
-        select  tv.tv_model, storehouse.storehouse_name, stocks.stock_count
-        from stocks
-        inner join tv on stocks.tv_id = tv.tv_id
-        inner join storehouse using (storehouse_id)
-        ORDER by stock_count ASC;
-    """)
-    data_list = []
-    keys_list = []
-    for row in cursor.fetchall():
-        data_dict = {
-            "Model": row[0],
-            "Store": row[1],
-            "Stock": row[2]
-        }
-        data_list.append(data_dict)
-        keys_list = data_dict.keys()
-    data = {
-        "data_list": data_list,
-        "keys_list": keys_list
-    }
-    connect.close()
+    data = services.get_stocks()
     return render(request=request, template_name="app/stocks.html", context=data)
+
+
+def add_supply_form(request):
+    if request.method == "POST":
+        text = request.POST.get("test_text")
+        return redirect('supply')
+    return render(request=request, template_name="app/form_add_supply.html")

@@ -1,28 +1,18 @@
 {% extends "app/base.html" %}
 
 {% block content %}
-    <h2 class="m-3">Список приемок:</h2>
+    <div class="d-flex bd-highlight mb-3">
+      <div class="p-2 bd-highlight"><h2 class="m-3">Список приемок:</h2></div>
 
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-            {% for key in keys_list %}
-                <th scope="col">{{ key }}</th>
-            {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
+      <div class="ms-auto p-2 bd-highlight mt-4">
+          <form action={% url "add_supply" %}>
+            <button class="btn btn-secondary">
+                {{ button_name }}
+            </button>
+          </form>
+      </div>
+    </div>
 
-        {% for item in data_list %}
-        <tr>
-<!--            {% for key in keys_list %}-->
-<!--                <td>{{ item. }}</td>-->
-<!--            {% endfor %}-->
-            <th scope="row">{{ item.ID }}</th>
-            <td>{{ item.Model }}</td>
-            <td>{{ item.Price }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    {% include "app/tables.html" %}
+
 {% endblock %}
