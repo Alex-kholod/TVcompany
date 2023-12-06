@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from .form import AddSupplyForm, AddShipmentForm
 import MySQLdb
 from . import services
 
@@ -31,6 +32,25 @@ def stocks(request):
 
 def add_supply_form(request):
     if request.method == "POST":
-        text = request.POST.get("test_text")
-        return redirect('supply')
-    return render(request=request, template_name="app/form_add_supply.html")
+        form = AddSupplyForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            # services.add_stock(post.count, post.tv, post.storehouse)
+            post.save()
+            return redirect('supply')
+    else:
+        form = AddSupplyForm()
+    return render(request=request, template_name="app/form_add_supply.html", context={'form': form})
+
+
+def add_shipment_form(request):
+    if request.method == "POST":
+        form = AddShipmentForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            # services.update_stock(post.count, post.tv, post.storehouse)
+            post.save()
+            return redirect('shipments')
+    else:
+        form = AddShipmentForm()
+    return render(request=request, template_name="app/form_add_shipment.html", context={'form': form})
